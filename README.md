@@ -85,6 +85,46 @@ The source code for the entire pipeline is organized inside the ml/ directory, w
 
 This GitHub repository serves as a portfolio representation of the project and contains the complete source code, execution screenshots, preprocessing statistics, evaluation results, and sample recommendation outputs.
 
+## Executing preprocess.py file
+The first stage of the project prepares the raw MovieLens 20M dataset for graph-based machine learning. Since Graph Neural Networks require structured and consistent graph data, the raw ratings are cleaned, filtered, and transformed into graph-ready datasets.
+
+The preprocessing pipeline performs the following operations:
+1.Loads the MovieLens 20M dataset (ratings.csv and movies.csv).
+2.Removes missing values and duplicate records.
+3.Converts explicit ratings into positive user–movie interactions by selecting ratings greater than or equal to 4.0.
+4.Removes inactive users with fewer than 20 positive interactions.
+5.Removes unpopular movies with fewer than 50 positive interactions.
+6.Repeats the filtering process until the dataset becomes stable.
+7.Converts original MovieLens IDs into continuous graph node indices.
+8.Saves processed datasets and mapping files for later stages.
+
+After preprocessing:
+
+Original Ratings: 20,000,263
+Original Users: 138,493
+Original Movies: 27,278
+
+After filtering:
+
+Active Users: 101,456
+Movies: 7,287
+Positive User–Movie Interactions: 9,396,876
+
+Files Generated
+The preprocessing stage creates the following files inside the saved_model/ directory:
+File & Purpose
+ratings_processed.parquet-Cleaned positive user–movie interactions
+movies_processed.parquet-Filtered movie metadata
+user_map.json	Maps original user IDs to graph node indices
+movie_map.json	Maps original movie IDs to graph node indices
+index_to_user.json- Reverse mapping from graph indices to user IDs
+index_to_movie.json- Reverse mapping from graph indices to movie IDs
+preprocessing_stats.json stores preprocessing statistics and configuration
+
+Below is the link to the preprocessing.py file:
+[Preprocessing Script](ml/preprocess.py)
+
+
 
 
 
