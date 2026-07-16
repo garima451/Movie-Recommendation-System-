@@ -217,6 +217,8 @@ The graph construction stage generates the following file inside the `saved_mode
 ## Graph Construction Output
 
 ### Terminal Execution
+![Graph Construction Terminal Output](graphconstruction.png)
+![Output Part-2](graphconstruction(pt-2).png)
 
 
 ---
