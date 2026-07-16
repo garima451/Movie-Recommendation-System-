@@ -85,44 +85,148 @@ The source code for the entire pipeline is organized inside the ml/ directory, w
 
 This GitHub repository serves as a portfolio representation of the project and contains the complete source code, execution screenshots, preprocessing statistics, evaluation results, and sample recommendation outputs.
 
-## Executing preprocess.py file
-The first stage of the project prepares the raw MovieLens 20M dataset for graph-based machine learning. Since Graph Neural Networks require structured and consistent graph data, the raw ratings are cleaned, filtered, and transformed into graph-ready datasets.
+---
 
-The preprocessing pipeline performs the following operations:
-1.Loads the MovieLens 20M dataset (ratings.csv and movies.csv).
-2.Removes missing values and duplicate records.
-3.Converts explicit ratings into positive user–movie interactions by selecting ratings greater than or equal to 4.0.
-4.Removes inactive users with fewer than 20 positive interactions.
-5.Removes unpopular movies with fewer than 50 positive interactions.
-6.Repeats the filtering process until the dataset becomes stable.
-7.Converts original MovieLens IDs into continuous graph node indices.
-8.Saves processed datasets and mapping files for later stages.
+## Preprocessing Results
 
-After preprocessing:
+### Original Dataset Statistics
 
-Original Ratings: 20,000,263
-Original Users: 138,493
-Original Movies: 27,278
+| Metric | Count |
+|--------|-------:|
+| Original Ratings | 20,000,263 |
+| Original Users | 138,493 |
+| Original Movies | 27,278 |
 
-After filtering:
+### Dataset After Filtering
 
-Active Users: 101,456
-Movies: 7,287
-Positive User–Movie Interactions: 9,396,876
+| Metric | Count |
+|--------|-------:|
+| Active Users | 101,456 |
+| Remaining Movies | 7,287 |
+| Positive User–Movie Interactions | 9,396,876 |
 
-Files Generated
-The preprocessing stage creates the following files inside the saved_model/ directory:
-File & Purpose
-ratings_processed.parquet-Cleaned positive user–movie interactions
-movies_processed.parquet-Filtered movie metadata
-user_map.json	Maps original user IDs to graph node indices
-movie_map.json	Maps original movie IDs to graph node indices
-index_to_user.json- Reverse mapping from graph indices to user IDs
-index_to_movie.json- Reverse mapping from graph indices to movie IDs
-preprocessing_stats.json stores preprocessing statistics and configuration
+The preprocessing stage successfully reduced the dataset by removing inactive users and rarely rated movies, resulting in a cleaner and denser interaction graph suitable for GraphSAGE training.
 
-Below is the link to the preprocessing.py file:
-[Preprocessing Script](ml/preprocess.py)
+---
+
+## Generated Files
+
+The preprocessing stage generates the following files inside the `saved_model/` directory.
+
+| File | Description |
+|------|-------------|
+| `ratings_processed.parquet` | Stores the cleaned positive user–movie interactions after preprocessing. |
+| `movies_processed.parquet` | Stores the filtered movie metadata corresponding to the remaining movies. |
+| `user_map.json` | Maps original MovieLens user IDs to continuous graph node indices. |
+| `movie_map.json` | Maps original MovieLens movie IDs to continuous graph node indices. |
+| `index_to_user.json` | Reverse mapping from graph node indices back to the original user IDs. |
+| `index_to_movie.json` | Reverse mapping from graph node indices back to the original movie IDs. |
+| `preprocessing_stats.json` | Stores preprocessing configuration and final dataset statistics for reproducibility. |
+
+---
+
+## Preprocessing Output
+
+![Preprocessing Output - Part 1](results%20of%20preprocessing.png)
+![Preprocessing Output - Part 2](results%20of%20preprocessing(pt-2).png)
+
+**Figure.** Successful execution of the preprocessing pipeline showing dataset loading, iterative filtering, final graph statistics, and the generated preprocessing artifacts.
+
+---
+
+## Source Code
+
+The implementation for this stage can be found here:
+
+**[📄 preprocess.py](ml/preprocess.py)**
+
+# 2. Graph Construction
+
+## Overview
+
+The second stage of the project converts the processed MovieLens dataset into a heterogeneous graph representation that can be directly used by the GraphSAGE Graph Neural Network.
+
+Unlike traditional recommendation systems that operate on tabular data, Graph Neural Networks require the dataset to be represented as interconnected nodes and edges. In this project, every user and every movie becomes a graph node, while every positive user–movie interaction becomes an edge connecting the two.
+
+The graph is built using the PyTorch Geometric `HeteroData` object, which supports multiple node types and relationship types.
+
+---
+
+## Graph Construction Workflow
+
+The graph construction pipeline performs the following operations:
+
+1. Loads the processed datasets generated during preprocessing.
+2. Reads the graph node indices (`user_idx` and `movie_idx`).
+3. Converts the interaction table into PyTorch tensors.
+4. Creates the forward edge tensor representing **User → Likes → Movie** relationships.
+5. Generates reverse edges representing **Movie → Liked By → User** relationships.
+6. Creates a heterogeneous graph using the `HeteroData` data structure.
+7. Adds user nodes and movie nodes to the graph.
+8. Validates the graph structure to ensure that all node indices and edge connections are correct.
+9. Saves the complete heterogeneous graph for the training stage.
+
+---
+
+## Graph Representation
+
+The graph contains two different node types:
+
+- User
+- Movie
+
+It also contains two directed edge relationships:
+
+```
+User ───── likes ─────► Movie
+Movie ── liked_by ───► User
+```
+
+The reverse edges are included to allow GraphSAGE to propagate information in both directions during message passing.
+
+---
+
+## Graph Statistics
+
+After graph construction:
+
+- User Nodes: **101,456**
+- Movie Nodes: **7,287**
+- Positive User–Movie Interactions: **9,396,876**
+- Forward Edge Tensor Shape: **[2, 9,396,876]**
+
+The heterogeneous graph contains:
+
+- User node type
+- Movie node type
+- User → Likes → Movie edges
+- Movie → Liked By → User edges
+
+---
+
+## Generated File
+
+The graph construction stage generates the following file inside the `saved_model/` directory.
+
+| File | Purpose |
+|------|---------|
+| movie_graph.pt | Stores the heterogeneous graph used during graph splitting and GraphSAGE training. |
+
+---
+
+## Graph Construction Output
+
+### Terminal Execution
+
+
+---
+
+## Source Code
+
+The complete implementation for this stage can be found here:
+
+📄 [build_graph.py](ml/build_graph.py)
+
 
 
 
