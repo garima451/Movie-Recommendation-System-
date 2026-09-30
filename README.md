@@ -610,16 +610,11 @@ GraphSAGE uses **mean aggregation** to combine information from neighboring node
 
 For a node \(v\), neighborhood information can conceptually be represented as:
 
-For a node \(v\), neighborhood information can conceptually be represented as:
-
-$$
+```math
 h_{\mathcal{N}(v)}
 =
-\operatorname{MEAN}
-\left(
-\{h_u : u \in \mathcal{N}(v)\}
-\right)
-$$
+\operatorname{MEAN}\left(\{h_u : u \in \mathcal{N}(v)\}\right)
+```
 
 The node's representation is then updated using information from both the node itself and its neighborhood.
 
@@ -631,9 +626,9 @@ After GraphSAGE generates user and movie embeddings, the model uses a dot-produc
 
 For user embedding \(z_u\) and movie embedding \(z_m\):
 
-$$
-s(u,m) = z_u^\top z_m
-$$
+```math
+s(u,m) = z_u^{T} z_m
+```
 
 where:
 
