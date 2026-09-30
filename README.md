@@ -727,25 +727,25 @@ The following screenshots show the execution of `test_model.py`.
 
 #### Loading the Graph and Creating the Model
 
-![Test Model - Graph Loading](testmodel1.png)
+![Test Model - Graph Loading](test1.png)
 
 The script successfully loads the training graph containing **101,456 users** and **7,287 movies** and reconstructs the GraphSAGE recommendation architecture.
 
 #### GraphSAGE Architecture
 
-![Test Model - Architecture](testmodel2.png)
+![Test Model - Architecture](test2.png)
 
 The reconstructed model contains user and movie embeddings, two heterogeneous GraphSAGE convolution layers, and a dot-product decoder.
 
 #### Test Edge Selection
 
-![Test Model - Test Edges](testmodel3.png)
+![Test Model - Test Edges](test3.png)
 
 A sample of user–movie pairs is extracted from the test edge-label index and passed through the recommendation model.
 
 #### Prediction Scores and Forward-Pass Verification
 
-![Test Model - Predictions](testmodel4.png)
+![Test Model - Predictions](test4.png)
 
 The model generates one score for every supplied user–movie pair and successfully completes the forward pass.
 
@@ -771,7 +771,11 @@ The model generates one score for every supplied user–movie pair and successfu
 
 The successful forward-pass test confirms that the GraphSAGE recommendation architecture is operational and ready for the next stage: **quantitative evaluation of recommendation/link-prediction performance**.
 
+## Source Code
 
+The implementation for this stage can be found here:
+
+📄 **[test.py](ml/test_model.py)**
 
 
 
