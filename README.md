@@ -424,11 +424,7 @@ python ml/train.py
 
 The GraphSAGE model is initialized using one sampled mini-batch before the actual training begins.
 
-<p align="center">
-<img src="ml/training_initialization.png" width="900">
-</p>
-
-**Figure 1.** Model creation, graph loading, and GraphSAGE initialization before training begins.
+![Model creation, graph loading, and GraphSAGE initialization before training begins](Screenshot(1500).png)
 
 ---
 
@@ -436,11 +432,7 @@ The GraphSAGE model is initialized using one sampled mini-batch before the actua
 
 The first epoch begins training using mini-batches generated through neighbor sampling. The training loss decreases as batches are processed.
 
-<p align="center">
-<img src="ml/training_epoch1.png" width="900">
-</p>
-
-**Figure 2.** GraphSAGE training progress during the first epoch.
+![GraphSAGE training progress during the first epoch](Screenshot(1501).png)
 
 ---
 
@@ -448,11 +440,7 @@ The first epoch begins training using mini-batches generated through neighbor sa
 
 The model continues learning meaningful user and movie representations with a lower average loss than the previous epoch.
 
-<p align="center">
-<img src="ml/training_epoch2.png" width="900">
-</p>
-
-**Figure 3.** Training progress during the second epoch.
+![Training progress during the second epoch](Screenshot(1502).png)
 
 ---
 
@@ -460,11 +448,7 @@ The model continues learning meaningful user and movie representations with a lo
 
 The loss continues to decrease, indicating improved link prediction performance.
 
-<p align="center">
-<img src="ml/training_epoch3.png" width="900">
-</p>
-
-**Figure 4.** Training progress during the third epoch.
+![Training progress during the third epoch](Screenshot(1503).png)
 
 ---
 
@@ -472,11 +456,7 @@ The loss continues to decrease, indicating improved link prediction performance.
 
 Further optimization results in lower training loss and improved learned embeddings.
 
-<p align="center">
-<img src="ml/training_epoch4.png" width="900">
-</p>
-
-**Figure 5.** Training progress during the fourth epoch.
+![Training progress during the fourth epoch](Screenshot(1504).png)
 
 ---
 
@@ -484,11 +464,7 @@ Further optimization results in lower training loss and improved learned embeddi
 
 The final training epoch produces the lowest loss achieved during optimization.
 
-<p align="center">
-<img src="ml/training_epoch5.png" width="900">
-</p>
-
-**Figure 6.** Final epoch of GraphSAGE training.
+![Final epoch of GraphSAGE training](train-pt2.png)
 
 ---
 
@@ -496,11 +472,7 @@ The final training epoch produces the lowest loss achieved during optimization.
 
 After all epochs finish, the best-performing GraphSAGE model and the latest checkpoint are automatically saved for later evaluation and recommendation generation.
 
-<p align="center">
-<img src="ml/training_completed.png" width="900">
-</p>
-
-**Figure 7.** Successful completion of GraphSAGE training and model checkpoint generation.
+![Successful completion of GraphSAGE training and model checkpoint generation](train-pt1.png)
 
 ---
 
