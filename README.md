@@ -424,7 +424,7 @@ python ml/train.py
 
 The GraphSAGE model is initialized using one sampled mini-batch before the actual training begins.
 
-![Model creation, graph loading, and GraphSAGE initialization before training begins](Screenshot(1500).png)
+![Model creation, graph loading, and GraphSAGE initialization before training begins](train-pt1.png)
 
 ---
 
@@ -432,7 +432,7 @@ The GraphSAGE model is initialized using one sampled mini-batch before the actua
 
 The first epoch begins training using mini-batches generated through neighbor sampling. The training loss decreases as batches are processed.
 
-![GraphSAGE training progress during the first epoch](Screenshot(1501).png)
+![GraphSAGE training progress during the first epoch](train-pt4.png)
 
 ---
 
@@ -440,7 +440,7 @@ The first epoch begins training using mini-batches generated through neighbor sa
 
 The model continues learning meaningful user and movie representations with a lower average loss than the previous epoch.
 
-![Training progress during the second epoch](Screenshot(1502).png)
+![Training progress during the second epoch](train-pt5.png)
 
 ---
 
@@ -448,7 +448,7 @@ The model continues learning meaningful user and movie representations with a lo
 
 The loss continues to decrease, indicating improved link prediction performance.
 
-![Training progress during the third epoch](Screenshot(1503).png)
+![Training progress during the third epoch](train-pt6.png)
 
 ---
 
@@ -456,7 +456,7 @@ The loss continues to decrease, indicating improved link prediction performance.
 
 Further optimization results in lower training loss and improved learned embeddings.
 
-![Training progress during the fourth epoch](Screenshot(1504).png)
+![Training progress during the fourth epoch](train-pt7.png)
 
 ---
 
@@ -464,7 +464,7 @@ Further optimization results in lower training loss and improved learned embeddi
 
 The final training epoch produces the lowest loss achieved during optimization.
 
-![Final epoch of GraphSAGE training](train-pt2.png)
+![Final epoch of GraphSAGE training](train-pt8.png)
 
 ---
 
