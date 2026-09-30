@@ -611,9 +611,9 @@ GraphSAGE uses **mean aggregation** to combine information from neighboring node
 For a node \(v\), neighborhood information can conceptually be represented as:
 
 ```math
-h_{\mathcal{N}(v)}
-=
-\operatorname{MEAN}\left(\{h_u : u \in \mathcal{N}(v)\}\right)
+h_{\mathcal{N}(v)} =
+\frac{1}{|\mathcal{N}(v)|}
+\sum_{u \in \mathcal{N}(v)} h_u
 ```
 
 The node's representation is then updated using information from both the node itself and its neighborhood.
