@@ -482,6 +482,298 @@ The implementation for this stage can be found here:
 
 📄 **[train.py](ml/train.py)**
 
+## 5. Model Testing and Forward-Pass Verification
+
+After training the GraphSAGE recommendation model, the next stage verifies that the trained model architecture can successfully process user–movie edges and generate prediction scores.
+
+The testing workflow is implemented in:
+
+```text
+ml/test_model.py
+```
+
+Run the testing script from the project root using:
+
+```bash
+python ml/test_model.py
+```
+
+### Purpose of `test_model.py`
+
+The purpose of this stage is to verify that the complete GraphSAGE architecture is functioning correctly before performing full recommendation-system evaluation.
+
+The script performs the following workflow:
+
+```text
+Load Training Graph
+        ↓
+Recover Graph Metadata
+        ↓
+Initialize GraphSAGE Model
+        ↓
+Construct Heterogeneous GraphSAGE Layers
+        ↓
+Select Sample User–Movie Edges
+        ↓
+Perform Forward Pass
+        ↓
+Generate Link-Prediction Scores
+        ↓
+Verify Output Shape
+```
+
+---
+
+### Loading the Training Graph
+
+The script first loads the previously generated training graph.
+
+The graph contains two node types:
+
+```text
+User nodes  : 101,456
+Movie nodes : 7,287
+```
+
+The graph metadata identifies the heterogeneous relationships used by GraphSAGE:
+
+```text
+('user', 'likes', 'movie')
+('movie', 'liked_by', 'user')
+```
+
+These two directed relations represent the bipartite user–movie interaction graph.
+
+Conceptually:
+
+```text
+User ───── likes ─────> Movie
+
+User <─── liked_by ─── Movie
+```
+
+The reverse relation allows information to propagate in both directions during GraphSAGE message passing.
+
+---
+
+### GraphSAGE Model Architecture
+
+The testing script reconstructs the recommendation model using the same architecture used during training.
+
+The model contains learnable embeddings for both node types:
+
+```text
+User Embedding:
+Embedding(101456, 64)
+
+Movie Embedding:
+Embedding(7287, 64)
+```
+
+Therefore, every user and every movie initially receives a learnable **64-dimensional representation**.
+
+The GraphSAGE encoder then performs neighborhood aggregation over the heterogeneous graph.
+
+The first GraphSAGE layer produces:
+
+```text
+128-dimensional hidden representations
+```
+
+and the second GraphSAGE layer produces:
+
+```text
+64-dimensional final node embeddings
+```
+
+The architecture can therefore be summarized as:
+
+```text
+User / Movie IDs
+       ↓
+64-D Learnable Embeddings
+       ↓
+GraphSAGE Layer 1
+       ↓
+128-D Hidden Representations
+       ↓
+GraphSAGE Layer 2
+       ↓
+64-D Graph-Aware Embeddings
+       ↓
+Dot Product Decoder
+       ↓
+User–Movie Compatibility Score
+```
+
+GraphSAGE uses **mean aggregation** to combine information from neighboring nodes.
+
+For a node \(v\), neighborhood information can conceptually be represented as:
+
+\[
+h_{\mathcal{N}(v)}
+=
+\operatorname{MEAN}
+\left(
+\{h_u : u \in \mathcal{N}(v)\}
+\right)
+\]
+
+The node's representation is then updated using information from both the node itself and its neighborhood.
+
+---
+
+### Dot-Product Decoder
+
+After GraphSAGE generates user and movie embeddings, the model uses a dot-product decoder to score a candidate user–movie pair.
+
+For user embedding \(z_u\) and movie embedding \(z_m\):
+
+\[
+s(u,m) = z_u^T z_m
+\]
+
+where:
+
+- \(z_u\) = learned user embedding
+- \(z_m\) = learned movie embedding
+- \(s(u,m)\) = predicted compatibility score
+
+A larger score indicates that the learned representations consider the user and movie more compatible.
+
+---
+
+### Testing Sample User–Movie Edges
+
+The testing script selects a small sample of edges from the test edge-label index.
+
+Example output:
+
+```text
+Test edge-label index:
+
+tensor([[18871,  6986, 54383, 85366, 57439],
+        [  542,  3708,  4470,  1344,  3560]])
+```
+
+The tensor has shape:
+
+```text
+[2, 5]
+```
+
+Each column represents one user–movie pair.
+
+For example:
+
+```text
+User 18871 → Movie 542
+User  6986 → Movie 3708
+User 54383 → Movie 4470
+User 85366 → Movie 1344
+User 57439 → Movie 3560
+```
+
+These IDs correspond to the **internal graph indices** used by the model rather than necessarily the original MovieLens IDs.
+
+---
+
+### Forward-Pass Results
+
+The selected user–movie edges are passed through the GraphSAGE model.
+
+Example output:
+
+```text
+Predicted scores:
+
+tensor([ 0.0206,
+         0.0064,
+        -0.0148,
+         0.0253,
+         0.0015])
+```
+
+The model therefore generates exactly one prediction score for each candidate edge.
+
+The resulting output shape is:
+
+```text
+torch.Size([5])
+```
+
+This confirms the expected relationship:
+
+```text
+5 input user–movie pairs
+        ↓
+GraphSAGE Encoder
+        ↓
+Dot-Product Decoder
+        ↓
+5 prediction scores
+```
+
+The successful execution ends with:
+
+```text
+Model forward pass completed successfully.
+```
+
+This verifies that the graph representation, heterogeneous GraphSAGE layers, node embeddings, decoder, and prediction pipeline are dimensionally compatible and can execute end-to-end.
+
+---
+
+### Test Model Output
+
+The following screenshots show the execution of `test_model.py`.
+
+#### Loading the Graph and Creating the Model
+
+![Test Model - Graph Loading](testmodel1.png)
+
+The script successfully loads the training graph containing **101,456 users** and **7,287 movies** and reconstructs the GraphSAGE recommendation architecture.
+
+#### GraphSAGE Architecture
+
+![Test Model - Architecture](testmodel2.png)
+
+The reconstructed model contains user and movie embeddings, two heterogeneous GraphSAGE convolution layers, and a dot-product decoder.
+
+#### Test Edge Selection
+
+![Test Model - Test Edges](testmodel3.png)
+
+A sample of user–movie pairs is extracted from the test edge-label index and passed through the recommendation model.
+
+#### Prediction Scores and Forward-Pass Verification
+
+![Test Model - Predictions](testmodel4.png)
+
+The model generates one score for every supplied user–movie pair and successfully completes the forward pass.
+
+---
+
+### Testing Stage Summary
+
+| Component | Result |
+|---|---|
+| Training graph loaded | Successful |
+| Number of users | 101,456 |
+| Number of movies | 7,287 |
+| User embedding dimension | 64 |
+| Movie embedding dimension | 64 |
+| GraphSAGE hidden dimension | 128 |
+| Final embedding dimension | 64 |
+| Aggregation method | Mean |
+| Decoder | Dot Product |
+| Sample test edges | 5 |
+| Output scores | 5 |
+| Output shape | `torch.Size([5])` |
+| Forward pass | Successful |
+
+The successful forward-pass test confirms that the GraphSAGE recommendation architecture is operational and ready for the next stage: **quantitative evaluation of recommendation/link-prediction performance**.
+
 
 
 
